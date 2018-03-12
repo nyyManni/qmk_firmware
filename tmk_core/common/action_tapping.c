@@ -101,7 +101,19 @@ bool process_tapping(keyrecord_t *keyp) {
 
     // if tapping
     if (IS_TAPPING_PRESSED()) {
-        if (WITHIN_TAPPING_TERM(event)) {
+        if (WITHIN_TAPPING_TERM(event)
+#ifdef TAPPING_TERM_NO_INTERRUPT
+            /* If the tap is not interrupted, allow it to last a bit longer until
+               it becomes a hold. */
+            || ((TIMER_DIFF_16(event.time, tapping_key.event.time) < TAPPING_TERM_NO_INTERRUPT)
+                && !tapping_key.tap.interrupted
+                /* Apply this only for the shift keys since it is the only
+                   modifier used when typing text at speed. */
+                && layer_switch_get_action(event.key).key.mods & (MOD_BIT(KC_LSFT)|MOD_BIT(KC_RSFT))
+                /* && (tapping_key.event.key == KC_LSFT || tapping_key.event.key == KC_RSFT) */
+                )
+#endif
+            ) {
             if (tapping_key.tap.count == 0) {
                 if (IS_TAPPING_KEY(event.key) && !event.pressed) {
                     // first tap!
