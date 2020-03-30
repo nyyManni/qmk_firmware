@@ -109,12 +109,7 @@ bool process_tapping(keyrecord_t *keyp) {
                 && !tapping_key.tap.interrupted
                 /* Apply this only for the shift keys since it is the only
                    modifier used when typing text at speed. */
-                && layer_switch_get_action(event.key).key.mods & (MOD_BIT(KC_LSFT)
-                                                                  | MOD_BIT(KC_RSFT)
-                                                                  | MOD_BIT(KC_LALT)
-                                                                  | MOD_BIT(KC_RALT)
-                                                                  | MOD_BIT(KC_LGUI)
-                                                                  | MOD_BIT(KC_RGUI))
+                && layer_switch_get_action(event.key).key.mods & (MOD_BIT(KC_LSFT)|MOD_BIT(KC_RSFT))
                 /* && (tapping_key.event.key == KC_LSFT || tapping_key.event.key == KC_RSFT) */
                 )
 #endif
