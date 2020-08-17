@@ -40,7 +40,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 int tp_buttons;
 
 #ifdef RETRO_TAPPING
+#ifndef RETRO_TAPPING_LIMIT
+#    define RETRO_TAPPING_LIMIT 1000
+#endif
 int retro_tapping_counter = 0;
+uint16_t retro_tapping_t0 = 0;
+uint16_t retro_tapping_duration = 0;
 #endif
 
 #ifdef FAUXCLICKY_ENABLE
@@ -68,6 +73,10 @@ void action_exec(keyevent_t event) {
         debug_event(event);
         dprintln();
 #ifdef RETRO_TAPPING
+        if (event.pressed)
+            retro_tapping_t0 = event.time;
+        else
+            retro_tapping_duration = event.time - retro_tapping_t0;
         retro_tapping_counter++;
 #endif
     }
@@ -705,7 +714,7 @@ void process_action(keyrecord_t *record, action_t action) {
             if (tap_count > 0) {
                 retro_tapping_counter = 0;
             } else {
-                if (retro_tapping_counter == 2) {
+                if (retro_tapping_counter == 2 && retro_tapping_duration < RETRO_TAPPING_LIMIT) {
                     tap_code(action.layer_tap.code);
                 }
                 retro_tapping_counter = 0;
